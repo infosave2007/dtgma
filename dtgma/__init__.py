@@ -22,6 +22,10 @@ from .model import (
     create_task_isolation_mask,
 )
 from .training import train_task, evaluate, train_continual
+
+# Alias for consistency
+train_dtgma_continual = train_continual
+
 from .baselines import (
     FineTuneModel,
     EWCModel,
@@ -50,6 +54,7 @@ __all__ = [
     "train_task",
     "evaluate",
     "train_continual",
+    "train_dtgma_continual",
     # Baselines
     "FineTuneModel",
     "EWCModel",

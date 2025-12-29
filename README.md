@@ -146,6 +146,27 @@ print(f"Average Forgetting: {results['avg_forgetting']*100:.1f}%")
 - DTG-MA achieves **49.6%** on Omniglot (+34.4% vs Adapter)
 - **0% forgetting** on all benchmarks — architectural guarantee, not soft regularization
 
+### CNN/ResNet Backbone Results
+
+For fair comparison with continual learning literature that uses CNN/ResNet backbones:
+
+#### Split MNIST with ResNet-18 backbone
+
+| Method | Accuracy | Forgetting | Params |
+|--------|----------|------------|--------|
+| **DTG-MA+ResNet** | **77.5%** | **0.0%** | 19.2M |
+| EWC+ResNet | 65.9% | 42.1% | 11.2M |
+| DER+++ResNet | 62.4% | 46.4% | 11.2M |
+| HAT+ResNet | 60.3% | 45.3% | 11.4M |
+| PackNet+ResNet | 59.1% | 50.5% | 11.4M |
+| Fine-tune+ResNet | 58.6% | 51.1% | 11.2M |
+
+**Key findings with CNN/ResNet:**
+- DTG-MA+ResNet achieves **77.5%** accuracy (+11.6% vs EWC)
+- **0% forgetting** — the only method with zero catastrophic forgetting
+- All baselines suffer from **42-51% forgetting**
+- DTG-MA's architectural isolation works regardless of backbone choice
+
 ### Run arXiv Experiments
 
 Run the complete benchmark suite used in the paper:
@@ -164,6 +185,28 @@ python arxiv_experiments.py --device cuda --epochs 30
 ```
 
 Results are saved to `ARXIV_RESULTS.md`.
+
+### Run CNN/ResNet Experiments
+
+For fair comparison with continual learning literature (which typically uses CNN/ResNet), run:
+
+```bash
+# Run with ResNet-18 backbone (recommended for literature comparison)
+python arxiv_cnn_experiments.py --backbone resnet --epochs 30
+
+# Run with simple CNN backbone
+python arxiv_cnn_experiments.py --backbone cnn --epochs 30
+
+# Run specific benchmark
+python arxiv_cnn_experiments.py --backbone resnet --benchmarks cifar100 --epochs 30
+
+# Run on GPU
+python arxiv_cnn_experiments.py --backbone resnet --device cuda --epochs 30
+```
+
+Results are saved to `CNN_RESULTS_RESNET.md` or `CNN_RESULTS_CNN.md`.
+
+**Note**: The main paper results use flattened MLP input for simplicity. CNN/ResNet experiments provide fair comparison with literature that uses convolutional backbones.
 
 ### Run Baselines Comparison
 

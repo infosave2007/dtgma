@@ -40,6 +40,21 @@ from .baselines import (
     train_derpp_continual,
 )
 
+# CNN/ResNet backends
+from .cnn_backends import (
+    SimpleCNN,
+    CIFAR_CNN,
+    ResNet18,
+    ResNet18_MNIST,
+    DTGMAWithCNN,
+    CNNFineTune,
+    CNNEWC,
+    CNNHAT,
+    CNNPackNet,
+    CNNDERPP,
+    get_backbone,
+)
+
 __version__ = "1.0.0"
 __author__ = "Kirichenko Oleg Yu."
 
@@ -67,4 +82,16 @@ __all__ = [
     "train_hat_continual",
     "train_packnet_continual",
     "train_derpp_continual",
+    # CNN backends
+    "SimpleCNN",
+    "CIFAR_CNN",
+    "ResNet18",
+    "ResNet18_MNIST",
+    "DTGMAWithCNN",
+    "CNNFineTune",
+    "CNNEWC",
+    "CNNHAT",
+    "CNNPackNet",
+    "CNNDERPP",
+    "get_backbone",
 ]

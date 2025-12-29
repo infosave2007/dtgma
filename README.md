@@ -20,12 +20,31 @@ $$M_t(i,j) = \begin{cases} 0, & \text{if connection allowed for task } t \\ -\in
 
 ## Installation
 
+### From GitHub
+
 ```bash
+git clone https://github.com/infosave2007/dtgma.git
 cd dtgma
 pip install -e .
 ```
 
-Or just add `dtgma/` to your Python path.
+### Requirements
+
+```bash
+pip install torch>=2.0 numpy
+# For LLM benchmarks:
+pip install transformers torchvision
+```
+
+### Manual Installation
+
+Or just add `dtgma/` to your Python path:
+
+```python
+import sys
+sys.path.append('/path/to/dtgma')
+from dtgma import DTGMAModel, train_continual
+```
 
 ## Quick Start
 
@@ -55,7 +74,7 @@ print(f"Average Forgetting: {results['avg_forgetting']*100:.1f}%")
 
 | Benchmark | Tasks | Accuracy | Forgetting | Notes |
 |---|---:|---:|---:|---|
-| **Split MNIST** | 5 | **97.6%** | **0.0%** | Binary classification |
+| **Split MNIST** | 5 | **99.2%** | **0.0%** | Binary classification |
 | **Permuted MNIST** | 10 | **82.8%** | **0.0%** | 10 classes each |
 | **Text Domains (Qwen2.5)** | 8 | **100%** | **0.0%** | Sentiment, Topic, etc. |
 
@@ -159,9 +178,26 @@ Each task has:
 
 ## References
 
-- Paper: `DTG-MA.tex` in parent repository
-- Main FCD repository: https://github.com/infosave2007/fcd
+- **Paper**: Kirichenko, O. (2025). *Dynamic Task-Graph Masked Attention (DTG-MA): An Architectural Approach to Continual Learning Without Catastrophic Forgetting*. Zenodo. [DOI: 10.5281/zenodo.17921784](https://doi.org/10.5281/zenodo.17921784)
+- **FCD repository**: https://github.com/infosave2007/fcd
+
+## Citation
+
+```bibtex
+@software{kirichenko2025dtgma,
+  author = {Kirichenko, Oleg Yu.},
+  title = {DTG-MA: Dynamic Task-Graph Masked Attention},
+  year = {2025},
+  publisher = {Zenodo},
+  doi = {10.5281/zenodo.17921784},
+  url = {https://github.com/infosave2007/dtgma}
+}
+```
 
 ## Author
 
 Kirichenko Oleg Yu.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.

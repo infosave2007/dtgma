@@ -81,11 +81,27 @@ print(f"Average Forgetting: {results['avg_forgetting']*100:.1f}%")
 
 ### Comparison with Baselines
 
-| Method | Split MNIST Acc | Forgetting |
-|---|---:|---:|
-| Fine-tuning | ~20% | ~80% |
-| EWC | ~85% | ~15% |
-| **DTG-MA (ours)** | **97.6%** | **0.0%** |
+Full comparison with state-of-the-art continual learning methods on Split MNIST (5 tasks):
+
+| Method | Accuracy | Forgetting |
+|--------|----------|------------|
+| **DTG-MA (ours)** | **99.2%** | **0.0%** |
+| HAT (Serra et al., 2018) | 85.6% | 16.6% |
+| EWC (Kirkpatrick et al., 2017) | 59.9% | 49.5% |
+| DER++ (Buzzega et al., 2020) | 58.9% | 50.4% |
+| PackNet (Mallya & Lazebnik, 2018) | 55.6% | 42.5% |
+| Fine-tuning | 53.9% | 56.9% |
+
+**Key findings:**
+- DTG-MA achieves **99.2% accuracy** — outperforming the best baseline (HAT) by **+13.6%**
+- DTG-MA guarantees **0% forgetting** — vs 16.6% for HAT, 50%+ for others
+- Architectural isolation provides **hard guarantees**, not soft regularization
+
+### Run Full Comparison
+
+```bash
+python dtgma_baselines_comparison.py --tasks 5 --epochs 100 --device cpu
+```
 
 ## Running Benchmarks
 

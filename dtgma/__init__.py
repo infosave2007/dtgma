@@ -22,6 +22,19 @@ from .model import (
     create_task_isolation_mask,
 )
 from .training import train_task, evaluate, train_continual
+from .baselines import (
+    FineTuneModel,
+    EWCModel,
+    HATModel,
+    PackNetModel,
+    DERPPModel,
+    train_baseline,
+    evaluate_baseline,
+    train_continual_baseline,
+    train_hat_continual,
+    train_packnet_continual,
+    train_derpp_continual,
+)
 
 __version__ = "1.0.0"
 __author__ = "Kirichenko Oleg Yu."
@@ -37,4 +50,16 @@ __all__ = [
     "train_task",
     "evaluate",
     "train_continual",
+    # Baselines
+    "FineTuneModel",
+    "EWCModel",
+    "HATModel",
+    "PackNetModel",
+    "DERPPModel",
+    "train_baseline",
+    "evaluate_baseline",
+    "train_continual_baseline",
+    "train_hat_continual",
+    "train_packnet_continual",
+    "train_derpp_continual",
 ]

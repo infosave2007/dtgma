@@ -9,7 +9,10 @@
 \usepackage{multirow}
 \usepackage{pgfplots}
 \usepackage{tikz}
+\usepackage{amsthm}
 \pgfplotsset{compat=1.17}
+
+\newtheorem{theorem}{Theorem}[section]
 
 \title{Dynamic Task-Graph Masked Attention (DTG-MA):\\
 An Architectural Approach to Continual Learning Without Catastrophic Forgetting}
@@ -31,7 +34,7 @@ Catastrophic forgetting remains a fundamental challenge in continual learning, w
 
 This paper introduces \textbf{Dynamic Task-Graph Masked Attention (DTG-MA)}, an architectural method that enforces hard isolation between tasks by representing trainable parameters as a task-annotated computation graph and applying task-specific attention masks that block forbidden computation paths using negative-infinity masking. Unlike loss-based constraints, DTG-MA prevents interference at the level of computational topology, ensuring that both forward and backward passes are restricted to task-relevant subgraphs.
 
-We evaluate DTG-MA under the \emph{task-aware} setting (task identity known at inference) on standard continual learning benchmarks. Experiments on Split MNIST (5 tasks), Split CIFAR-100 (10 tasks), and Omniglot (10 tasks) demonstrate that DTG-MA achieves \textbf{98.9\%, 52.5\%, and 49.6\% accuracy respectively, all with 0\% forgetting}, significantly outperforming state-of-the-art methods including HAT, EWC, PackNet, DER++, LoRA, and Adapter-based approaches.
+We evaluate DTG-MA under the \emph{task-aware} setting (task identity known at inference) on standard continual learning benchmarks. Experiments on Split MNIST (5 tasks), Split CIFAR-100 (10 tasks), and Omniglot (10 tasks) demonstrate that DTG-MA achieves \textbf{98.9\%, 52.5\%, and 49.6\% accuracy respectively, all with 0\% forgetting}. DTG-MA matches strong baselines (Adapter) on simple benchmarks while significantly outperforming all methods on challenging multi-class tasks (CIFAR-100: +22.6\%, Omniglot: +34.4\%).
 
 \textbf{Code:} \url{https://github.com/infosave2007/dtgma}
 \end{abstract}
@@ -90,6 +93,8 @@ DTG-MA is based on three core principles.
 
 Trainable parameters are represented as edges in a dynamic computation graph. Each edge $e$ is associated with a task identifier $\text{task\_id}(e)$ assigned at creation time and preserved throughout training. When a new task arrives, the graph is extended with additional edges rather than modifying existing ones.
 
+\textbf{Edges and task masks (implementation view).} We represent each trainable connection in the model as an edge $e$ in a directed computation graph. In practice, an ``edge'' corresponds to a concrete parameter block that contributes to the forward path (e.g., a linear projection matrix or a subset of its entries). Each edge is assigned a task label $\tau(e)$ when it is created (the first task that is allowed to update it). For a task $t$, we build a binary permission mask $G_t(e) \in \{0, 1\}$ over edges, where $G_t(e) = 1$ iff $\tau(e) = t$. We enforce this permission mask inside attention by adding an additive logit mask $M_t$ with entries $0$ for allowed connections and $-\infty$ for disallowed ones. Since $\text{Softmax}(-\infty) = 0$, masked connections contribute exactly zero probability mass, so the corresponding paths are removed from both the forward computation and the backward gradient flow. Intuitively, the mask turns the full model into a task-specific subnetwork selected at runtime.
+
 \subsection{Task-Specific Attention Masking}
 
 In attention-based models, similarity scores are computed as:
@@ -138,7 +143,7 @@ The training procedure for DTG-MA is summarized below:
 
 \noindent\textbf{Inference on task $t$:} Load mask $M_t$, apply masked attention, predict.
 
-\textbf{Complexity.} Each task requires $O(d^2)$ additional parameters for attention projections and $O(n^2)$ bits for the attention mask, where $d$ is hidden dimension and $n$ is sequence length. Total parameter growth is linear in $T$.
+\textbf{Complexity.} Each task requires $O(d^2)$ additional parameters for attention projections and $O(n^2)$ bits for the attention mask, where $d$ is hidden dimension and $n$ is the number of positions participating in attention. Total parameter growth is linear in $T$.
 
 \section{Architectural Non-Interference}
 
@@ -172,7 +177,7 @@ We evaluate DTG-MA on standard continual learning benchmarks and compare against
 
 \textbf{Benchmarks:}
 \begin{itemize}
-\item \textbf{Split MNIST} \cite{zenke2017}: 5 binary classification tasks (digits 0/1, 2/3, 4/5, 6/7, 8/9), 784-dimensional input.
+\item \textbf{Split MNIST} \cite{lecun1998mnist,zenke2017}: 5 binary classification tasks (digits 0/1, 2/3, 4/5, 6/7, 8/9), 784-dimensional input.
 \item \textbf{Split CIFAR-100}: 10 tasks with 10 classes each, 3072-dimensional flattened input.
 \item \textbf{Omniglot} \cite{lake2015}: 10 tasks with 20 character classes each, 784-dimensional input. Real handwritten characters from 50 alphabets.
 \end{itemize}
@@ -183,7 +188,7 @@ We evaluate DTG-MA on standard continual learning benchmarks and compare against
 
 \textbf{Training:} 30 epochs per task, Adam optimizer with $\text{lr}=0.001$, batch size 64, cross-entropy loss.
 
-\textbf{Baselines:} We compare against seven methods, all re-implemented with identical architecture and training budget:
+\textbf{Baselines:} We compare against seven methods, all using the same backbone architecture and comparable training budget where applicable:
 \begin{itemize}
 \item \textbf{Fine-tuning}: Sequential training without any forgetting mitigation.
 \item \textbf{EWC} \cite{kirkpatrick2017}: Elastic Weight Consolidation with $\lambda=1000$.
@@ -195,6 +200,8 @@ We evaluate DTG-MA on standard continual learning benchmarks and compare against
 \end{itemize}
 
 \textbf{Implementation:} PyTorch, Apple M1 GPU (MPS), random seed 42. Code: \url{https://github.com/infosave2007/dtgma}
+
+\textbf{Replay and comparison protocol.} DTG-MA is evaluated in a strict no-replay setting: once a task is finished, its training data are not stored and are never revisited. Some baselines (e.g., replay-based methods such as DER++) are allowed to use their standard replay buffers, because prohibiting replay would change the method definition and would not reflect the intended operating regime of these approaches. To keep the comparison fair, we (i)~report results under an identical backbone and training budget for all methods, and (ii)~disclose replay memory size and sampling strategy for replay-based baselines (DER++ uses a 200-sample buffer with reservoir sampling).
 
 \subsection{Main Results}
 
@@ -279,7 +286,7 @@ DTG-MA consistently outperforms all baselines across benchmarks. On Split MNIST,
 
 \subsection{CNN/ResNet Backbone Experiments}
 
-To provide fair comparison with continual learning literature that uses convolutional backbones, we evaluate DTG-MA with ResNet-18 feature extractor on Split MNIST.
+To provide fair comparison with continual learning literature that uses convolutional backbones, we evaluate DTG-MA with ResNet-18 \cite{he2016resnet} feature extractor on Split MNIST. The ResNet-18 backbone is trained from scratch (not pretrained) with MNIST images resized to $32 \times 32$ and replicated to 3 channels. This setup tests whether DTG-MA's isolation principle generalizes to CNN architectures; the lower absolute accuracy compared to MLP reflects the overhead of training a large CNN on small grayscale images.
 
 \begin{table}[h]
 \centering
@@ -429,7 +436,7 @@ All results achieve \textbf{0\% forgetting}, compared to 4--50\% for baselines. 
 
 The trade-off is the requirement for task identity at inference and linear parameter growth. Future work will explore automatic task detection and parameter sharing mechanisms to address these limitations.
 
-\begin{thebibliography}{10}
+\begin{thebibliography}{12}
 
 \bibitem{kirkpatrick2017}
 Kirkpatrick, J., Pascanu, R., Rabinowitz, N., Veness, J., Desjardins, G., Rusu, A.A., Milan, K., Quan, J., Ramalho, T., Grabska-Barwinska, A., et al.
@@ -490,6 +497,17 @@ Lake, B.M., Salakhutdinov, R., and Tenenbaum, J.B.
 \newblock Human-level concept learning through probabilistic program induction.
 \newblock \emph{Science}, 350(6266):1332--1338, 2015.
 \newblock DOI: 10.1126/science.aab3050
+
+\bibitem{he2016resnet}
+He, K., Zhang, X., Ren, S., and Sun, J.
+\newblock Deep Residual Learning for Image Recognition.
+\newblock In \emph{IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, pages 770--778, 2016.
+\newblock arXiv:1512.03385
+
+\bibitem{lecun1998mnist}
+LeCun, Y., Bottou, L., Bengio, Y., and Haffner, P.
+\newblock Gradient-based learning applied to document recognition.
+\newblock \emph{Proceedings of the IEEE}, 86(11):2278--2324, 1998.
 
 \end{thebibliography}
 

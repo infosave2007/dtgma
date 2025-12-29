@@ -70,13 +70,14 @@ print(f"Average Forgetting: {results['avg_forgetting']*100:.1f}%")
 
 ## Benchmark Results
 
-### Summary
+### Summary (arXiv Experiments)
 
-| Benchmark | Tasks | Accuracy | Forgetting | Notes |
-|---|---:|---:|---:|---|
-| **Split MNIST** | 5 | **99.2%** | **0.0%** | Binary classification |
-| **Permuted MNIST** | 10 | **82.8%** | **0.0%** | 10 classes each |
-| **Text Domains (Qwen2.5)** | 8 | **100%** | **0.0%** | Sentiment, Topic, etc. |
+| Benchmark | Tasks | Classes | Accuracy | Forgetting |
+|---|---:|---:|---:|---:|
+| **Split MNIST** | 5 | 2 per task | **98.9%** | **0.0%** |
+| **Split CIFAR-100** | 10 | 10 per task | **52.5%** | **0.0%** |
+| **Omniglot** | 10 | 20 per task | **49.6%** | **0.0%** |
+| **Text Domains (Qwen2.5)** | 8 | varies | **100%** | **0.0%** |
 
 ### Ablation Study
 
@@ -100,23 +101,71 @@ print(f"Average Forgetting: {results['avg_forgetting']*100:.1f}%")
 
 ### Comparison with Baselines
 
-Full comparison with state-of-the-art continual learning methods on Split MNIST (5 tasks):
+#### Split MNIST (5 tasks, 2 classes each)
 
-| Method | Accuracy | Forgetting |
-|--------|----------|------------|
-| **DTG-MA (ours)** | **99.2%** | **0.0%** |
-| HAT (Serra et al., 2018) | 85.6% | 16.6% |
-| EWC (Kirkpatrick et al., 2017) | 59.9% | 49.5% |
-| DER++ (Buzzega et al., 2020) | 58.9% | 50.4% |
-| PackNet (Mallya & Lazebnik, 2018) | 55.6% | 42.5% |
-| Fine-tuning | 53.9% | 56.9% |
+| Method | Accuracy | Forgetting | Params |
+|--------|----------|------------|--------|
+| **DTG-MA (ours)** | **98.9%** | **0.0%** | 203K |
+| Adapter | 98.6% | 0.0% | 433K |
+| HAT | 87.2% | 4.0% | 267K |
+| LoRA | 84.9% | 16.4% | 288K |
+| EWC | 74.7% | 28.2% | 267K |
+| PackNet | 63.1% | 13.1% | 267K |
+| Fine-tuning | 60.1% | 47.9% | 267K |
+| DER++ | 58.9% | 50.2% | 267K |
+
+#### Split CIFAR-100 (10 tasks, 10 classes each)
+
+| Method | Accuracy | Forgetting | Params |
+|--------|----------|------------|--------|
+| **DTG-MA (ours)** | **52.5%** | **0.0%** | 789K |
+| Adapter | 29.9% | 21.1% | 1.19M |
+| HAT | 23.3% | 14.7% | 855K |
+| EWC | 16.2% | 9.7% | 855K |
+| LoRA | 14.9% | 38.5% | 988K |
+| PackNet | 14.4% | 27.3% | 855K |
+| Fine-tuning | 14.0% | 42.7% | 855K |
+| DER++ | 13.7% | 40.9% | 855K |
+
+#### Omniglot (10 tasks, 20 classes each)
+
+| Method | Accuracy | Forgetting | Params |
+|--------|----------|------------|--------|
+| **DTG-MA (ours)** | **49.6%** | **0.0%** | 203K |
+| Adapter | 15.2% | 17.0% | 603K |
+| LoRA | 10.9% | 21.0% | 313K |
+| PackNet | 10.8% | 6.8% | 272K |
+| DER++ | 9.5% | 42.9% | 272K |
+| Fine-tuning | 9.2% | 14.3% | 272K |
+| HAT | 8.1% | 4.2% | 272K |
+| EWC | 6.3% | 1.3% | 272K |
 
 **Key findings:**
-- DTG-MA achieves **99.2% accuracy** — outperforming the best baseline (HAT) by **+13.6%**
-- DTG-MA guarantees **0% forgetting** — vs 16.6% for HAT, 50%+ for others
-- Architectural isolation provides **hard guarantees**, not soft regularization
+- DTG-MA achieves **98.9%** on Split MNIST (+11.7% vs HAT)
+- DTG-MA achieves **52.5%** on Split CIFAR-100 (+22.6% vs Adapter)
+- DTG-MA achieves **49.6%** on Omniglot (+34.4% vs Adapter)
+- **0% forgetting** on all benchmarks — architectural guarantee, not soft regularization
 
-### Run Full Comparison
+### Run arXiv Experiments
+
+Run the complete benchmark suite used in the paper:
+
+```bash
+# Run all benchmarks (Split MNIST, Split CIFAR-100, Omniglot)
+python arxiv_experiments.py --epochs 30 --runs 1
+
+# Run specific benchmark
+python arxiv_experiments.py --benchmarks split_mnist --epochs 30
+python arxiv_experiments.py --benchmarks split_cifar100 --epochs 30
+python arxiv_experiments.py --benchmarks omniglot --epochs 30
+
+# Run on GPU (if available)
+python arxiv_experiments.py --device cuda --epochs 30
+```
+
+Results are saved to `ARXIV_RESULTS.md`.
+
+### Run Baselines Comparison
 
 ```bash
 python dtgma_baselines_comparison.py --tasks 5 --epochs 100 --device cpu

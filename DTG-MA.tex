@@ -284,6 +284,8 @@ EWC \cite{kirkpatrick2017} & $6.3\%$ & $1.3\%$ & 272K \\
 
 DTG-MA consistently outperforms all baselines across benchmarks. On Split MNIST, it achieves +11.7\% over the next best method (HAT). On Split CIFAR-100, the gap widens to +22.6\% over Adapter. On Omniglot, DTG-MA achieves +34.4\% improvement, demonstrating strong performance on few-shot character recognition with real handwritten data.
 
+\textbf{Note on DER++ results.} DER++ shows unexpectedly low performance on Split MNIST because it uses a shared replay buffer across all tasks. In the binary classification setup (labels 0/1 reused for each task), replayed samples from earlier tasks interfere with current task learning---the model receives conflicting supervision for the same label values but different digit classes. This is a known limitation of class-incremental replay methods in task-incremental settings with shared output heads. On multi-class benchmarks (CIFAR-100, Omniglot) where labels are disjoint, DER++ performs closer to expectations.
+
 \subsection{CNN/ResNet Backbone Experiments}
 
 To provide fair comparison with continual learning literature that uses convolutional backbones, we evaluate DTG-MA with ResNet-18 \cite{he2016resnet} feature extractor on Split MNIST. The ResNet-18 backbone is trained from scratch (not pretrained) with MNIST images resized to $32 \times 32$ and replicated to 3 channels. This setup tests whether DTG-MA's isolation principle generalizes to CNN architectures; the lower absolute accuracy compared to MLP reflects the overhead of training a large CNN on small grayscale images.

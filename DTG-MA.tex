@@ -182,7 +182,7 @@ We evaluate DTG-MA on standard continual learning benchmarks and compare against
 \item \textbf{Omniglot} \cite{lake2015}: 10 tasks with 20 character classes each, 784-dimensional input. Real handwritten characters from 50 alphabets.
 \end{itemize}
 
-\textbf{Architecture:} 2-layer DTG-MA with 256 hidden dimensions. Input projection: $d_{in} \rightarrow 256$, hidden layer: $256 \rightarrow 256$, output heads: $256 \rightarrow C_t$ (task-specific).
+\textbf{Architecture:} 2-layer DTG-MA with 256 hidden dimensions. Input projection: $d_{in} \rightarrow 256$, hidden layer: $256 \rightarrow 256$, output heads: $256 \rightarrow C_t$ (task-specific, one per task). For fair comparison, all methods use 	extbf{task-specific output heads} in our experiments, allowing each task to maintain its own classifier. This is standard for task-incremental learning where task identity is known at inference.
 
 \textbf{Note on feature extraction:} Following the common practice in continual learning research that focuses on the learning algorithm rather than feature learning, our main experiments use flattened pixel inputs with an MLP-based architecture. This isolates the contribution of DTG-MA's attention masking mechanism from the effects of convolutional feature learning. For comparison with literature that uses CNN/ResNet backbones, we provide additional experiments with ResNet-18 feature extractors in the supplementary code repository.
 
@@ -284,7 +284,7 @@ EWC \cite{kirkpatrick2017} & $6.3\%$ & $1.3\%$ & 272K \\
 
 DTG-MA consistently outperforms all baselines across benchmarks. On Split MNIST, it achieves +11.7\% over the next best method (HAT). On Split CIFAR-100, the gap widens to +22.6\% over Adapter. On Omniglot, DTG-MA achieves +34.4\% improvement, demonstrating strong performance on few-shot character recognition with real handwritten data.
 
-\textbf{Note on DER++ results.} DER++ shows unexpectedly low performance on Split MNIST because it uses a shared replay buffer across all tasks. In the binary classification setup (labels 0/1 reused for each task), replayed samples from earlier tasks interfere with current task learning---the model receives conflicting supervision for the same label values but different digit classes. This is a known limitation of class-incremental replay methods in task-incremental settings with shared output heads. On multi-class benchmarks (CIFAR-100, Omniglot) where labels are disjoint, DER++ performs closer to expectations.
+\textbf{Note on baseline performance.} While all methods use task-specific output heads, the shared encoder remains the main source of interference for regularization-based methods (EWC, Fine-tuning) and replay-based methods (DER++). DTG-MA's attention masking prevents interference at the encoder level as well, which explains the performance gap even with identical output heads.
 
 \subsection{CNN/ResNet Backbone Experiments}
 
@@ -504,12 +504,13 @@ Lake, B.M., Salakhutdinov, R., and Tenenbaum, J.B.
 He, K., Zhang, X., Ren, S., and Sun, J.
 \newblock Deep Residual Learning for Image Recognition.
 \newblock In \emph{IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, pages 770--778, 2016.
-\newblock arXiv:1512.03385
+\newblock DOI: 10.1109/CVPR.2016.90
 
 \bibitem{lecun1998mnist}
 LeCun, Y., Bottou, L., Bengio, Y., and Haffner, P.
 \newblock Gradient-based learning applied to document recognition.
 \newblock \emph{Proceedings of the IEEE}, 86(11):2278--2324, 1998.
+\newblock DOI: 10.1109/5.726791
 
 \end{thebibliography}
 

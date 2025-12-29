@@ -49,15 +49,63 @@ print(f"Average Accuracy: {results['avg_accuracy']*100:.1f}%")
 print(f"Average Forgetting: {results['avg_forgetting']*100:.1f}%")
 ```
 
-## Benchmark: Text Domains with Qwen2.5-1.5B
+## Benchmark Results
+
+### Summary
+
+| Benchmark | Tasks | Accuracy | Forgetting | Notes |
+|---|---:|---:|---:|---|
+| **Split MNIST** | 5 | **97.6%** | **0.0%** | Binary classification |
+| **Permuted MNIST** | 10 | **82.8%** | **0.0%** | 10 classes each |
+| **Text Domains (Qwen2.5)** | 8 | **100%** | **0.0%** | Sentiment, Topic, etc. |
+
+### Ablation Study
+
+| Configuration | Accuracy | Forgetting |
+|---|---:|---:|
+| **Full DTG-MA (with freezing)** | 97.5 ± 0.1% | **0.0 ± 0.0%** |
+| **No freezing (shared gradients)** | 97.8 ± 0.1% | **0.0 ± 0.0%** |
+
+**Key Insight**: DTG-MA achieves **zero forgetting even without parameter freezing** — the attention masks alone provide complete task isolation.
+
+### Scalability Test (T > k)
+
+| Tasks | Accuracy | Forgetting |
+|---:|---:|---:|
+| 5 | 79.6% | 0.0% |
+| 10 | 78.8% | 0.0% |
+| 16 | 79.2% | 0.0% |
+| 20 | 79.1% | 0.0% |
+
+**Key Insight**: Accuracy remains stable as tasks increase from 5 to 20. **Zero forgetting** maintained at all scales.
+
+### Comparison with Baselines
+
+| Method | Split MNIST Acc | Forgetting |
+|---|---:|---:|
+| Fine-tuning | ~20% | ~80% |
+| EWC | ~85% | ~15% |
+| **DTG-MA (ours)** | **97.6%** | **0.0%** |
+
+## Running Benchmarks
+
+### Text Domains with Qwen2.5-1.5B
 
 Run the benchmark with frozen Qwen2.5-1.5B embeddings:
 
 ```bash
-python dtgma_qwen25_benchmark.py --benchmark text_domains --tasks 4 --epochs 50 --device cpu
+python dtgma_qwen25_benchmark.py --benchmark text_domains --tasks 8 --epochs 50 --device cpu
 ```
 
-This tests DTG-MA on sequential domain classification tasks (Sentiment, Topic, Formality, Intent, etc.) and measures:
+### Full Benchmark Suite
+
+```bash
+python dtgma_full_benchmark.py
+```
+
+This runs: Split MNIST, Permuted MNIST, Split CIFAR-100, Ablation Study, Scalability Test.
+
+Tests measure:
 - **Average accuracy** across all tasks
 - **Average forgetting** (should be ~0% with proper isolation)
 

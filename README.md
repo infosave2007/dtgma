@@ -167,24 +167,24 @@ For fair comparison with continual learning literature that uses CNN/ResNet back
 - All baselines suffer from **42-51% forgetting**
 - DTG-MA's architectural isolation works regardless of backbone choice
 
-### Run arXiv Experiments
+### Run Experiments
 
 Run the complete benchmark suite used in the paper:
 
 ```bash
 # Run all benchmarks (Split MNIST, Split CIFAR-100, Omniglot)
-python arxiv_experiments.py --epochs 30 --runs 1
+python experiments.py --epochs 30 --runs 1
 
 # Run specific benchmark
-python arxiv_experiments.py --benchmarks split_mnist --epochs 30
-python arxiv_experiments.py --benchmarks split_cifar100 --epochs 30
-python arxiv_experiments.py --benchmarks omniglot --epochs 30
+python experiments.py --benchmarks split_mnist --epochs 30
+python experiments.py --benchmarks split_cifar100 --epochs 30
+python experiments.py --benchmarks omniglot --epochs 30
 
 # Run on GPU (if available)
-python arxiv_experiments.py --device cuda --epochs 30
+python experiments.py --device cuda --epochs 30
 ```
 
-Results are saved to `ARXIV_RESULTS.md`.
+Results are saved to `EXPERIMENT_RESULTS.md`.
 
 ### Run CNN/ResNet Experiments
 
@@ -192,16 +192,16 @@ For fair comparison with continual learning literature (which typically uses CNN
 
 ```bash
 # Run with ResNet-18 backbone (recommended for literature comparison)
-python arxiv_cnn_experiments.py --backbone resnet --epochs 30
+python cnn_experiments.py --backbone resnet --epochs 30
 
 # Run with simple CNN backbone
-python arxiv_cnn_experiments.py --backbone cnn --epochs 30
+python cnn_experiments.py --backbone cnn --epochs 30
 
 # Run specific benchmark
-python arxiv_cnn_experiments.py --backbone resnet --benchmarks cifar100 --epochs 30
+python cnn_experiments.py --backbone resnet --benchmarks cifar100 --epochs 30
 
 # Run on GPU
-python arxiv_cnn_experiments.py --backbone resnet --device cuda --epochs 30
+python cnn_experiments.py --backbone resnet --device cuda --epochs 30
 ```
 
 Results are saved to `CNN_RESULTS_RESNET.md` or `CNN_RESULTS_CNN.md`.

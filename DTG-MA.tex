@@ -58,7 +58,7 @@ This work proposes \textbf{DTG-MA}, a method that addresses catastrophic forgett
 
 \section{Background and Related Work}
 
-Existing approaches to mitigating catastrophic forgetting include regularization-based methods such as Elastic Weight Consolidation (EWC) \cite{kirkpatrick2017}, knowledge distillation approaches such as Learning without Forgetting (LwF) \cite{li2016}, replay buffers \cite{buzzega2020}, and parameter isolation techniques including Progressive Neural Networks \cite{rusu2016}, adapters, and LoRA \cite{hu2021}. While effective in certain scenarios, these methods do not provide strict architectural guarantees against task interference.
+Existing approaches to mitigating catastrophic forgetting include regularization-based methods such as Elastic Weight Consolidation (EWC) \cite{kirkpatrick2017}, knowledge distillation approaches such as Learning without Forgetting (LwF) \cite{li2016}, replay buffers \cite{buzzega2020}, and parameter isolation techniques including Progressive Neural Networks \cite{rusu2016}, Adapters \cite{houlsby2019}, and LoRA \cite{hu2021}. While effective in certain scenarios, these methods do not provide strict architectural guarantees against task interference.
 
 The attention mechanism \cite{vaswani2017} has become the foundation of modern neural architectures. DTG-MA extends this mechanism with task-specific masking to achieve hard isolation between tasks.
 
@@ -196,7 +196,7 @@ We evaluate DTG-MA on standard continual learning benchmarks and compare against
 \item \textbf{PackNet} \cite{mallya2018}: Progressive pruning and freezing.
 \item \textbf{DER++} \cite{buzzega2020}: Dark Experience Replay with 200-sample buffer.
 \item \textbf{LoRA} \cite{hu2021}: Low-Rank Adaptation with rank 8.
-\item \textbf{Adapter}: Task-specific adapter modules (bottleneck dim 64).
+\item \textbf{Adapter} \cite{houlsby2019}: Task-specific adapter modules (bottleneck dim 64).
 \end{itemize}
 
 \textbf{Implementation:} PyTorch, Apple M1 GPU (MPS), random seed 42. Code: \url{https://github.com/infosave2007/dtgma}
@@ -511,6 +511,12 @@ LeCun, Y., Bottou, L., Bengio, Y., and Haffner, P.
 \newblock Gradient-based learning applied to document recognition.
 \newblock \emph{Proceedings of the IEEE}, 86(11):2278--2324, 1998.
 \newblock DOI: 10.1109/5.726791
+
+\bibitem{houlsby2019}
+Houlsby, N., Giurgiu, A., Jastrzebski, S., Morrone, B., de Laroussilhe, Q., Gesmundo, A., Attariyan, M., and Gelly, S.
+\newblock Parameter-Efficient Transfer Learning for NLP.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, volume 97, pages 2790--2799. PMLR, 2019.
+\newblock arXiv:1902.00751
 
 \end{thebibliography}
 
